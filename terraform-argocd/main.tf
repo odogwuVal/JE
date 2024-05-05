@@ -1,6 +1,6 @@
 provider "helm" {
   kubernetes {
-    # host        = var.host
+    host        = var.host
     config_path = var.config_path
   }
 }
