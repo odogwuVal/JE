@@ -2,3 +2,5 @@ terraform.tfvars
 .terraform*
 config
 kube
+terraform.tfstate.*
+terraform.tfstate
