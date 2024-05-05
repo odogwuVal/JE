@@ -1,0 +1,43 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginxdemo
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/odogwuVal/JE.git
+    path: helmcharts/nginxchart
+    targetRevision: HEAD
+    helm:
+      releaseName: nginxdemo
+      values: |
+        replicaCount: 1
+        fullnameOverride: nginxdemo        
+        livenessProbe: {}
+        podAnnotations:
+          reloader.stakater.com/auto: "true"                   
+        readinessProbe: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: -1
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jsonPointers:
+        - /spec/metrics
